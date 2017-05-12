@@ -1,6 +1,4 @@
 main() {
-    set -e
-
     ZSH_THEMES=~/.oh-my-zsh/themes
 
     if [ ! -d "$ZSH_THEMES" ]; then
@@ -17,15 +15,13 @@ main() {
 
   printf "Installing theme\n"
 
-  env wget https://raw.githubusercontent.com/gorzechowski/zsh-theme/master/install.sh -O $ZSH_THEMES/gorzechowski.zsh-theme || {
+  wget https://raw.githubusercontent.com/gorzechowski/zsh-theme/master/gorzechowski.zsh-theme -O $ZSH_THEMES/gorzechowski.zsh-theme || {
     printf "Error: download of gorzechowski theme file failed\n"
     exit 1
   }
 
 
   echo 'gorzechowski theme installed!'
-
-  env zsh
 }
 
 main
