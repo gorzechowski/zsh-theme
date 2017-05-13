@@ -16,11 +16,39 @@ function defined() {
     typeset -p "$varname" > /dev/null 2>&1
 }
 
+function uptree_file_exists() {
+    local file_name="$1"
+    local current_dir=$(pwd)
+
+    while [[ "${current_dir}" != "." && "${current_dir}" != "/" ]]; do
+        if [[ -f ${current_dir}/${file_name} ]]; then
+            return 0 # true
+        fi
+
+        current_dir=$(dirname -- "${current_dir}")
+    done
+
+    return 1 # false
+}
+
+function files_exists() {
+    local files_mask="$1"
+    local max_depth="$2"
+    local current_dir=$(pwd)
+
+    if [[ -n $(find "${current_dir}" -type f -name "${files_mask}" -maxdepth "${max_depth}") ]]; then
+        return 0 # true
+    fi
+
+    return 1 # false
+}
+
 defined GORZECHOWSKI_THEME_VAGRANT_MACHINE_PROMPT || GORZECHOWSKI_THEME_VAGRANT_MACHINE_PROMPT=false
 defined GORZECHOWSKI_THEME_NODE_VERSION_PROMPT || GORZECHOWSKI_THEME_NODE_VERSION_PROMPT=true
 defined GORZECHOWSKI_THEME_GIT_PROMPT || GORZECHOWSKI_THEME_GIT_PROMPT=true
 defined GORZECHOWSKI_THEME_GIT_STATUS_PROMPT || GORZECHOWSKI_THEME_GIT_STATUS_PROMPT=true
 defined GORZECHOWSKI_THEME_HOSTNAME_PROMPT || GORZECHOWSKI_THEME_HOSTNAME_PROMPT=true
+defined GORZECHOWSKI_THEME_PHP_VERSION_PROMPT || GORZECHOWSKI_THEME_PHP_VERSION_PROMPT=true
 
 local segment_prompt
 local cwd="${CYAN_BOLD}%c${RESET}"
@@ -37,20 +65,14 @@ function vagrant_machine_prompt() {
     fi
 
     local prompt
-    local current_dir=$(pwd)
 
-    while [[ "${current_dir}" != "." && "${current_dir}" != "/" ]]; do
-        if [[ -f ${current_dir}/Vagrantfile ]]; then
-            IFS="," local index=($(vagrant status --machine-readable | grep "state-human-short"))
-            machine=${index[2]}
-            state=${index[4]}
+    uptree_file_exists "Vagrantfile" && {
+        IFS="," local index=($(vagrant status --machine-readable | grep "state-human-short"))
+        machine=${index[2]}
+        state=${index[4]}
 
-            prompt="${BLUE_BOLD}vagrant:(${RED_BOLD}${machine}${WHITE} ➜ ${RED_BOLD}${state}${BLUE_BOLD})"
-            break
-        fi
-
-        current_dir=$(dirname -- "${current_dir}")
-    done
+        prompt="${BLUE_BOLD}vagrant:(${RED_BOLD}${machine}${WHITE} ➜ ${RED_BOLD}${state}${BLUE_BOLD})"
+    }
 
     if [[ -n ${prompt} ]]; then
         echo "${prompt} "
@@ -63,16 +85,28 @@ function node_version_prompt() {
     fi
 
     local prompt
-    local current_dir=$(pwd)
 
-    while [[ "${current_dir}" != "." && "${current_dir}" != "/" ]]; do
-        if [[ -f ${current_dir}/package.json ]]; then
-            prompt="${BLUE_BOLD}node:(${RED_BOLD}$(node -v)${BLUE_BOLD})"
-            break
-        fi
+    uptree_file_exists "package.json" && {
+        prompt="${BLUE_BOLD}node:(${RED_BOLD}$(node -v)${BLUE_BOLD})"
+    }
 
-        current_dir=$(dirname -- "${current_dir}")
-    done
+    if [[ -n ${prompt} ]]; then
+        echo "${prompt} "
+    fi
+}
+
+function php_version_prompt() {
+    if [[ ${GORZECHOWSKI_THEME_PHP_VERSION_PROMPT} == false ]]; then
+        return;
+    fi
+
+    local prompt
+
+    (uptree_file_exists "composer.json" || files_exists "*.php" 2) && {
+        IFS=" " version=($(php -v 2>&1 | grep -oe "^PHP\s[0-9.]*\s"))
+
+        prompt="${BLUE_BOLD}php:(${RED_BOLD}${version[2]}${BLUE_BOLD})"
+    }
 
     if [[ -n ${prompt} ]]; then
         echo "${prompt} "
@@ -139,4 +173,4 @@ function hostname_prompt() {
     echo "${prompt} "
 }
 
-PROMPT='$(hostname_prompt)${segment_prompt} ${cwd} $(git_prompt)$(vagrant_machine_prompt)$(node_version_prompt)${RESET}'
+PROMPT='$(hostname_prompt)${segment_prompt} ${cwd} $(git_prompt)$(vagrant_machine_prompt)$(node_version_prompt)$(php_version_prompt)${RESET}'

@@ -12,6 +12,10 @@
 
 <img src="https://cloud.githubusercontent.com/assets/4973929/26007058/405a99c6-373f-11e7-91be-6a2c1eaac628.png" alt="Node version" width="560px" />
 
+* PHP version
+
+<img src="https://cloud.githubusercontent.com/assets/4973929/26029464/fd641424-3835-11e7-8c3a-5d0d13b11ad3.png" alt="PHP version" width="560px" />
+
 * Hostname including SSH
 
 <img src="https://cloud.githubusercontent.com/assets/4973929/26019527/1dfcfcca-3776-11e7-960f-61d9ff7297f4.png" alt="Hostname including SSH" width="360px" />
@@ -54,6 +58,7 @@ Default settings are
 | GORZECHOWSKI_THEME_GIT_PROMPT              | true    |
 | GORZECHOWSKI_THEME_GIT_STATUS_PROMPT       | true    |
 | GORZECHOWSKI_THEME_HOSTNAME_PROMPT         | true    |
+| GORZECHOWSKI_THEME_PHP_VERSION_PROMPT      | true    |
 
 Overwrite properties in `~/.zshrc` file
 
