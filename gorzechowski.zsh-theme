@@ -36,7 +36,7 @@ function files_exists() {
     local max_depth="$2"
     local current_dir=$(pwd)
 
-    if [[ -n $(find "${current_dir}" -type f -name "${files_mask}" -maxdepth "${max_depth}") ]]; then
+    if [[ -n $(find "${current_dir}" -maxdepth "${max_depth}" -type f -name "${files_mask}") ]]; then
         return 0 # true
     fi
 
