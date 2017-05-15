@@ -57,7 +57,8 @@ Default settings are
 | GORZECHOWSKI_THEME_NODE_VERSION_PROMPT     | true    |
 | GORZECHOWSKI_THEME_GIT_PROMPT              | true    |
 | GORZECHOWSKI_THEME_GIT_STATUS_PROMPT       | true    |
-| GORZECHOWSKI_THEME_HOSTNAME_PROMPT         | true    |
+| GORZECHOWSKI_THEME_HOSTNAME_LOCAL_PROMPT   | true    |
+| GORZECHOWSKI_THEME_HOSTNAME_SSH_PROMPT     | true    |
 | GORZECHOWSKI_THEME_PHP_VERSION_PROMPT      | true    |
 
 Overwrite properties in `~/.zshrc` file
